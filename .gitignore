@@ -1,0 +1,101 @@
+# Python & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+.venv
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+!frontend/lib/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing & Logs
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+coverage/
+.coverage
+
+# IDE & OS
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+[Dd]esktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+
+# Node / Frontend
+node_modules/
+.next/
+out/
+.turbo/
+.vercel/
+
+# Database & Volume Mounts
+*.sqlite3
+*.db
+*.ses
+:memory:.ses
+postgres_data/
+redis_data/
+
+# Personal source material (never commit)
+storage/private/
+
+# Document uploads and local runtime files
+storage/uploads/
+backend/storage/
+backend/storage/uploads/
+*.sqlite3-journal
+
+# Evaluation test runs & scratch results
+battery_results.json
+evaluation_test_run*.json
+*.tsbuildinfo
+next-env.d.ts
+docs personal/
+
+# TLS private keys and certificates are deployment-owned
+nginx/certs/
+certs/
+*.pem
+*.key
+*.crt
+*.cer
+*.pfx
+*.p12
+
+# Local Docker overrides
+docker-compose.override.yml
+docker-compose.*.local.yml
