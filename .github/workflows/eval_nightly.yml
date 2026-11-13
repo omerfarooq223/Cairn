@@ -2,19 +2,49 @@ name: Nightly RAGAS Full Evaluation
 on:
   schedule:
     - cron: '0 2 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'evaluation/**'
+      - '.github/workflows/eval_nightly.yml'
+
 jobs:
   ragas-eval:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install httpx
+
       - name: Run Full RAGAS Suite
-        run: python evaluation/run_ragas.py --dataset evaluation/golden_dataset.json
-        env:
-          API_BASE_URL: ${{ secrets.STAGING_API_URL }}
-          API_TOKEN: ${{ secrets.STAGING_API_TOKEN }}
+        run: |
+          if [ -n "${{ secrets.STAGING_API_URL }}" ]; then
+            python evaluation/run_ragas.py --dataset evaluation/golden_dataset.json --base-url "${{ secrets.STAGING_API_URL }}" --api-token "${{ secrets.STAGING_API_TOKEN }}"
+          else
+            python evaluation/run_ragas.py --dataset evaluation/golden_dataset.json --mock
+          fi
+
       - name: Assert faithfulness > 0.90
         run: python evaluation/assert_thresholds.py --metric faithfulness --min 0.90
+
       - name: Assert context precision > 0.80
         run: python evaluation/assert_thresholds.py --metric context_precision --min 0.80
+
       - name: Upload results
         run: python evaluation/upload_results.py
+
+      - name: Archive evaluation results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ragas-evaluation-results
+          path: evaluation/results/

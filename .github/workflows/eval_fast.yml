@@ -1,13 +1,17 @@
 name: Fast Eval Gate
-on: [pull_request]
+on:
+  pull_request:
+  workflow_dispatch:
+
 jobs:
   fast-eval:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v4
-        with: {python-version: '3.11'}
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - name: Install dependencies
         run: pip install -r backend/requirements.txt
       - name: Run unit tests

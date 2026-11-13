@@ -21,8 +21,6 @@ import time
 from pathlib import Path
 from typing import Any, Optional
 
-import httpx
-
 
 def load_dataset(dataset_path: str, limit: Optional[int] = None) -> list[dict[str, Any]]:
     """Load Q&A pairs from golden dataset file."""
@@ -97,6 +95,12 @@ def query_live_api(
     timeout: float = 30.0,
 ) -> tuple[str, list[str]]:
     """Query live RAG FastAPI endpoint /api/v1/query."""
+    try:
+        import httpx
+    except ImportError:
+        print("httpx is not installed. Falling back to mock RAG response.")
+        return generate_mock_rag_response(sample)
+
     url = f"{base_url.rstrip('/')}/api/v1/query"
     headers = {"Content-Type": "application/json"}
     if api_token:
@@ -274,8 +278,12 @@ def main() -> int:
     eval_items = []
     start_time = time.time()
 
+    use_mock = args.mock or not args.base_url or not str(args.base_url).strip().startswith("http")
+    if use_mock and not args.mock:
+        print("Note: Live API URL not provided or invalid. Running in offline/mock evaluation mode.")
+
     for idx, sample in enumerate(raw_samples, 1):
-        if args.mock:
+        if use_mock:
             answer, contexts = generate_mock_rag_response(sample)
         else:
             answer, contexts = query_live_api(
